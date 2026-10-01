@@ -5,16 +5,30 @@
 Necesitamos crear un proyecto en react que pueda listar los datos desde un servicio REST utilizando fetch.
 
 ## requerimientos tecnicos
-(requerimientos tecnicos)[requerimientos.md]
+[requerimientos tecnicos](requerimientos.md)
+
+## pruebas de codigo
+[pruebas de codigo](pruebas.md)
+
+## seguridad del codigo
+[seguridad del codigo](seguridad.md)
+
+## principios de codigo
+[principios de codigo](principio.md)
+
+## diseno
+El diseño visual del sitio
+[diseno](diseno.md)
+
 
 ## estructura del proyecto
 
 * modelos:
-  - Photo: representa una foto con sus detalles (id, title, url, thumbnailUrl)
+  - Photo: representa una foto con sus detalles (id, title, url, thumbnailUrl,albumId)
 * servicios: contiene las funciones para consumir los endpoints REST del proyecto.
   - PhotoService: contiene las funciones para interactuar con el endpoint de fotos.
 * pagina:
-  - PhotoPage: pagina que muestra la lista de fotos obtenidas desde el servicio REST.  No olvide agregar la ruta `/photos` en el enrutador.  Para esta página, use el componente PhotoList
+  - PhotoPage: pagina que muestra la lista de fotos obtenidas desde el servicio REST.  No olvide agregar la ruta `/` en el enrutador.  Para esta página, use el componente PhotoList
 * componentes:  
   - PhotoList: componente que muestra la lista de fotos en formato de cuadrícula o lista.  Para este componente, use PhotoItem y PhotoHeader.
   - PhotoItem: componente que muestra los detalles de una sola foto.
@@ -39,11 +53,17 @@ Contiene las funciones para interactuar con el endpoint de fotos.
 #### obtenerFotos
 - Descripcion: Obtiene la lista de fotos desde el endpoint REST.
 - Retorno: Promise<Photo[]>
+- Comportamiento en caso de error:
+  - Si la respuesta HTTP no es ok (ej: status 500, 404), rechaza la promesa con un `Error` cuyo mensaje es descriptivo e incluye el codigo de estado (ej: "Error al obtener las fotos: 500").
+  - Si la respuesta no es un JSON valido, rechaza con un `Error` indicando que la respuesta no pudo ser procesada.
+  - Si falla la red (sin conexion), envuelve el error nativo de fetch en un mensaje amigable.
+  - El mensaje de error no debe exponer detalles internos como stack traces (ver seguridad A04).
+  - Quien consume el servicio (PhotoPage) captura el error con try/catch y pasa el mensaje al estado `error` para mostrarlo en el `Alert` de PhotoList.
 
 ## paginas
 
 ### PhotoPage
-Pagina que muestra la lista de fotos obtenidas desde el servicio REST. No olvide agregar la ruta `/photos` en el enrutador.
+Pagina que muestra la lista de fotos obtenidas desde el servicio REST. No olvide agregar la ruta `/` en el enrutador.
 
 ## componentes
 
