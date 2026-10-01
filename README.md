@@ -21,3 +21,57 @@ Proyecto React para listar datos desde un servicio REST (JSONPlaceholder). Esta 
 4. `principio.md` → como se escribe el codigo
 5. `pruebas.md` → como se valida
 6. `seguridad.md` → como se verifica la seguridad
+
+## 🗺️ arquitectura y flujo del proyecto
+
+```mermaid
+flowchart TD
+    subgraph Router["Enrutamiento - React Router v8"]
+        RUTA["Ruta / -> PhotoPage"]
+    end
+
+    subgraph Pagina["Pagina"]
+        PP["PhotoPage<br/>estado: photos / loading / error"]
+    end
+
+    subgraph Componentes["Componentes MUI"]
+        PL["PhotoList<br/>Grid2 + estados UI"]
+        PH["PhotoHeader<br/>Typography h4 + Chip"]
+        PI["PhotoItem<br/>Card + CardMedia"]
+        DLG["Dialog<br/>imagen completa"]
+    end
+
+    subgraph Servicio["Servicio fetch"]
+        SVC["PhotoService.obtenerFotos<br/>GET - Promise Photo array"]
+    end
+
+    subgraph Datos["Modelo y REST"]
+        MODEL["Photo<br/>id, title, url,<br/>thumbnailUrl, albumId"]
+        API[("JSONPlaceholder<br/>/photos")]
+    end
+
+    RUTA --> PP
+    PP -->|"useEffect - obtenerFotos"| SVC
+    SVC -->|"fetch GET HTTPS"| API
+    API -->|"JSON - Photo array"| SVC
+    SVC -->|"resolve / reject"| PP
+    PP -->|"props: photos, loading, error"| PL
+    PL --> PH
+    PL --> PI
+    PI -->|"onClick"| DLG
+    SVC -.->|"tipa con"| MODEL
+    PI -.->|"renderiza"| MODEL
+```
+
+### 🔄 estados de la UI (PhotoList)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Cargando
+    Cargando --> ConDatos : fetch OK - CircularProgress oculto
+    Cargando --> Error : fetch falla - Alert severity error
+    Cargando --> Vacia : fetch OK sin datos
+    ConDatos --> [*] : galeria Grid2 de PhotoItem
+    Error --> [*]
+    Vacia --> [*] : mensaje "No hay fotos disponibles"
+```
